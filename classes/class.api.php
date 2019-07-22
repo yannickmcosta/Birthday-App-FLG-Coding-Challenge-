@@ -81,9 +81,9 @@
 					// Request the data from the SQL database, using the defined limits and offsets
 					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(`user_dob`) = MONTH(CURRENT_TIMESTAMP) AND DAY(`user_dob`) = DAY(CURRENT_TIMESTAMP) LIMIT ?, ?", $offset, $limit);
 				} else if ($today === FALSE) {
-					// If not, get everyone who isn't today
+					// If not, get everyone who isn't today and within the next 2 weeks
 					// Request the data from the SQL database, using the defined limits and offsets
-					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP) LIMIT ?, ?", $offset, $limit);
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE DATE_FORMAT(user_dob, \"2019-%m-%d\") BETWEEN DATE(CURRENT_TIMESTAMP + INTERVAL 1 DAY) AND DATE(CURRENT_TIMESTAMP + INTERVAL 2 WEEK) LIMIT ?, ?", $offset, $limit);
 				} else {
 					// If not, get everyone
 					// Request the data from the SQL database, using the defined limits and offsets
