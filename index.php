@@ -26,14 +26,14 @@
 		<!-- Page Content -->
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-9">
+				<div class="col-lg-8">
 					<h1 class="mt-4">FLG Coding Challenge - Birthday Tracker</h1>
 					<table class="table table-striped" id="birthdayTable">
 						<thead>
 							<tr>
 								<th>User's Name</th>
 								<th>Users Date Of Birth</th>
-								<th>How long until</th>
+								<th class="d-none d-sm-block">How long until</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -41,7 +41,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="col-lg-3">
+				<div class="col-lg-4">
 					<h1 class="mt-4">
 						<h1>Useful Info</h1>
 						<p>Hi there! This system has been developed as part of a Coding Challenge by FLG. Hope you like it!</p>
@@ -70,7 +70,7 @@
 						console.log(data);
 						let birthdayTable	=	$( "#birthdayTable tbody" );
 						$.each(data, function(index, element){
-							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td>" + element.time_until + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
+							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td class=\"d-none d-sm-block\">" + element.time_until + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
 						})
 					}
 				})
@@ -112,6 +112,13 @@
 		<?php if (isset($_GET['badRequest'])) { ?>
 		<script>
 			Swal.fire('Bad Request', 'The request you made was bad, or didn\'t have everything needed, please try again.', 'warning');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
+		
+		<?php if (isset($_GET['serverError'])) { ?>
+		<script>
+			Swal.fire('Internal Server Error', 'An internal server error occurred, please try again.', 'warning');
 			window.history.replaceState({}, document.title, "/");
 		</script>
 		<?php } ?>
