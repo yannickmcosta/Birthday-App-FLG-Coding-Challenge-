@@ -70,36 +70,85 @@
 					throw new Exception ("Bad Request", 400);
 				}
 				
-				$ch = curl_init();
+				$curlRes = curl_init();
 				curl_setopt($curlRes, CURLOPT_URL, API_ENDPOINT);
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_HTTPHEADER, [
+				curl_setopt($curlRes, CURLOPT_CUSTOMREQUEST, 'POST');
+				curl_setopt($curlRes, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($curlRes, CURLOPT_HTTPHEADER, [
 					'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
 				]);
 				
-				$body = http_build_query($postDatas);
+				$body = http_build_query($postData);
 				
-				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+				curl_setopt($curlRes, CURLOPT_POST, 1);
+				curl_setopt($curlRes, CURLOPT_POSTFIELDS, $body);
 				
-				$response = curl_exec($ch);
+				$response = curl_exec($curlRes);
 				
-				if (!$response) {
-					error_log("Interactor Error Occurred (SET): Code: " . curl_errno($curlRes) . " Error: " . curl_error($curlRes));
+				
+				$httpResponseCode	=	curl_getinfo($curlRes, CURLINFO_HTTP_CODE);
+				if ($httpResponseCode == 201) {
 					curl_close($curlRes);
-					throw new Exception ("Error occurred retrieving data from API, please check the logs", 500);
+					return TRUE;
 				} else {
-					$httpResponseCode	=	curl_getinfo($ch, CURLINFO_HTTP_CODE);
-					if ($http_response_header == 201) {
-						return TRUE;
-					} else {
-						
-						return FALSE;
-					}
+					curl_close($curlRes);
+					return FALSE;
+				}
+			} catch (Exception $e) {
+				throw $e;
+			}
+		}
+		
+		public function remove($entry_id) {
+			try {
+				if (!isset($entry_id)) {
+					// The entry_id variable should be set in order to call this function
+					// and in order for the function to operate. If it's not set, tell the
+					// user about it
+					$this->error	=	[
+						"error_description"	=>	"No Entry ID value provided",
+						"error_code"		=>	"ENTRY_ID_MISSING"
+					];
+					throw new Exception ("Bad Request", 400);
 				}
 				
-				curl_close($ch);
+				if (!is_numeric($entry_id)) {
+					// The entry_id variable should always be numeric as it refers to the
+					// auto_increment value of the record in the database. In a perfect world,
+					// this would be a UUID, as to prevent a user iterating through your API
+					// and ruining your day. Something that would be done as an advancement of course
+					$this->error	=	[
+						"error_description"	=>	"Provided Entry ID is not valid",
+						"error_code"		=>	"ENTRY_ID_NON_NUMERIC"
+					];
+					throw new Exception ("Bad Request", 400);
+				}
+				
+				
+				$curlRes = curl_init();
+				curl_setopt($curlRes, CURLOPT_URL, API_ENDPOINT);
+				curl_setopt($curlRes, CURLOPT_CUSTOMREQUEST, 'DELETE');
+				curl_setopt($curlRes, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($curlRes, CURLOPT_HTTPHEADER, [
+					'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
+				]);
+				
+				$body = [
+					'entry_id' => $entry_id,
+				];
+				$body = http_build_query($body);
+				curl_setopt($curlRes, CURLOPT_POST, 1);
+				curl_setopt($curlRes, CURLOPT_POSTFIELDS, $body);
+				$response = curl_exec($curlRes);
+				
+				if (curl_getinfo($curlRes, CURLINFO_HTTP_CODE) == 204) {
+					curl_close($curlRes);
+					return TRUE;
+				} else {
+					curl_close($curlRes);
+					return FALSE;
+				}
+
 			} catch (Exception $e) {
 				throw $e;
 			}
