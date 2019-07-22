@@ -115,8 +115,8 @@
 					throw new Exception ("Bad Request", 400);
 				}
 				
-				$postData['user_name']	=	preg_replace('/[^A-Za-z0-9\ \-\.\']/','',$postData['user_name'];
-				$postData['user_dob']	=	preg_replace('/[^0-9\-\/]/','',$postData['user_dob'];
+				$postData['user_name']	=	preg_replace('/[^A-Za-z0-9\ \-\.\']/','',$postData['user_name']);
+				$postData['user_dob']	=	preg_replace('/[^0-9\-\/]/','',$postData['user_dob']);
 				
 				$postData['user_dob']	=	date("Y-m-d", strtotime($postData['user_dob']));
 				
@@ -128,7 +128,26 @@
 					// Those with birthdays on this date, my god have you upset some DBAs
 				}
 				
+				// Insert this record into the SQL Database, if the provided data is already
+				// there, a unique key exception will be thrown (Code 1062), this can be caught 
+				// and handled appropriately, with an error returned to the user for example, in
+				// this instance, we will update the existing record.
+				$result	=	$this->dbHandler->query("INSERT INTO `birthdays` SET `user_name` = ?, `user_dob` = ? ON DUPLICATE KEY UPDATE `user_name` = VALUES (`user_name`), `user_dob` = VALUES (`user_dob`)", $postData['user_name'], $postData['user_dob']);
 				
+				
+				if (!$result['affectedRows'] >= 1) {
+					// Check to see that more than 1 row was affected in the database, if this is
+					// not the case, then the SQL didn't execute sucessfully, and this will need
+					// to be relayed back to the user
+					$this->error	=	[
+						"error_description"	=>	"Unable to insert row into database.",
+						"error_code"		=>	"DB_AFFECTED_ROWS_NOT_GT1"
+					];
+					throw new Exception ("Internal Server Error", 500);
+				} else {
+					// As all has gone well, return TRUE
+					return TRUE;
+				}
 				
 			} catch (Exception $e) {
 				throw $e;
