@@ -43,7 +43,7 @@
 			- offset	(optional) (int)	=	Defines the offset record number to start on
 		*/
 		
-		public function get($limit = 100, $offset = 0) {
+		public function get($limit = 100, $offset = 0, $today = NULL) {
 			try {
 				// Check first to see if these have been set to empty by the calling script,
 				// and then change them back to the defaults if so
@@ -75,8 +75,20 @@
 				$limit	=	filter_var($limit, FILTER_SANITIZE_NUMBER_INT);
 				$offset	=	filter_var($offset, FILTER_SANITIZE_NUMBER_INT);
 				
-				// Request the data from the SQL database, using the defined limits and offsets
-				$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public` FROM `birthdays` LIMIT ?, ?", $offset, $limit);
+				
+				if ($today === TRUE) {
+					// Check if the user has requested only today's birthdays
+					// Request the data from the SQL database, using the defined limits and offsets
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(`user_dob`) = MONTH(CURRENT_TIMESTAMP) AND DAY(`user_dob`) = DAY(CURRENT_TIMESTAMP) LIMIT ?, ?", $offset, $limit);
+				} else if ($today === FALSE) {
+					// If not, get everyone who isn't today
+					// Request the data from the SQL database, using the defined limits and offsets
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP)LIMIT ?, ?", $offset, $limit);
+				} else {
+					// If not, get everyone
+					// Request the data from the SQL database, using the defined limits and offsets
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP)LIMIT ?, ?", $offset, $limit);
+				}
 				
 				// If there are no results, this function will return FALSE, and the API
 				// will subsequently return an HTTP/2 204 No Content based on this
@@ -95,6 +107,7 @@
 						$line['added']				=	$row[3];
 						$line['is_public']			=	$row[4];
 						$line['time_until']			=	$this->betweenDates($row[2], date("Y-m-d"));
+						$line['age']				=	$row[5];
 						
 						array_push($this->data, $line);
 					}
