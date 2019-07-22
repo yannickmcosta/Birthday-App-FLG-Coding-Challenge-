@@ -4,7 +4,6 @@
 	require(APP_ROOT . "/classes/class.api.php");
 	
 	try {
-	
 		if ($_SERVER['REQUEST_METHOD'] == "GET") {
 			// GET CODE
 			$api	=	new api();
@@ -20,7 +19,12 @@
 			}
 		} else if ($_SERVER['REQUEST_METHOD'] == "POST") {
 			// POST CODE
-			header("HTTP/2 200 OK");
+			$api	=	new api();
+			if ($api->set($_POST)) {
+				header("HTTP/2 201 Created");
+			} else {
+				header("HTTP/2 500 Internal Server Error");
+			}
 		} else if ($_SERVER['REQUEST_METHOD'] == "DELETE") {
 			// DELETE CODE
 			header("HTTP/2 200 OK");
@@ -35,6 +39,5 @@
 		error_log($e);
 		header("HTTP/2 " .  $e->getCode() . " " . $e->getMessage());
 		header("Content-type: application/json");
-		echo json_encode($error);
-		
+		echo json_encode($api->error);
 	}
