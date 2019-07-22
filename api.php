@@ -27,7 +27,13 @@
 			}
 		} else if ($_SERVER['REQUEST_METHOD'] == "DELETE") {
 			// DELETE CODE
-			header("HTTP/2 200 OK");
+			parse_str(file_get_contents("php://input"), $requestVariables);
+			$api	=	new api();
+			if ($api->remove($requestVariables['entry_id'])) {
+				header("HTTP/2 204 No Content");
+			} else {
+				header("HTTP/2 500 Internal Server Error");
+			}
 		} else {
 			$error	=	[
 				"error_description"	=>	"Invalid Request Method",
