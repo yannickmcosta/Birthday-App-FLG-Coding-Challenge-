@@ -22,6 +22,21 @@
 			return $dateTime && $dateTime->format($format) == $date;
 		}
 		
+		public static function betweenDates($date1, $date2, $format = "%m months, %d days") {
+			$date1	=	date("jS F", strtotime($date1));
+			$date2	=	date("jS F", strtotime($date2));
+			
+			if ($date1 == $date2) {
+				return "Happy Birthday! 🎂";
+			} else {
+				$date1 = new DateTime($date1);
+				$date2 = new DateTime($date2);
+				
+				$interval = $date2->diff($date1);
+				return $interval->format($format);
+			}
+		}
+		
 		/*
 			api::get
 			- limit		(optional) (int)	=	Defines the limit to the number of records to retrieve
@@ -73,11 +88,14 @@
 					foreach ($results as $row) {
 						// Iterate through each results from the database, assign it to a key
 						// then push it into the data array
-						$line['id']			=	$row[0];
-						$line['user_name']	=	$row[1];
-						$line['user_dob']	=	$row[2];
-						$line['added']		=	$row[3];
-						$line['is_public']	=	$row[4];
+						$line['id']					=	$row[0];
+						$line['user_name']			=	$row[1];
+						$line['user_dob']			=	$row[2];
+						$line['user_dob_formatted']	=	date("jS F Y", strtotime($row[2]));
+						$line['added']				=	$row[3];
+						$line['is_public']			=	$row[4];
+						$line['time_until']			=	$this->betweenDates($row[2], date("Y-m-d"));
+						
 						array_push($this->data, $line);
 					}
 					// Encode the data array as a json string, then return TRUE to the calling function

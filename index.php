@@ -28,7 +28,7 @@
 			<div class="row">
 				<div class="col-lg-9">
 					<h1 class="mt-4">FLG Coding Challenge - Birthday Tracker</h1>
-					<table class="table table-striped">
+					<table class="table table-striped" id="birthdayTable">
 						<thead>
 							<tr>
 								<th>User's Name</th>
@@ -38,14 +38,6 @@
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($birthdayData as $birthday) { ?>
-							<tr>
-								<td><?php echo $birthday->user_name; ?></td>
-								<td><?php echo date("jS F Y", strtotime($birthday->user_dob)); ?></td>
-								<td><?php echo interactor::betweenDates($birthday->user_dob, date("Y-m-d")); ?></td>
-								<td><a class="text text-danger" href="process?action=delete&entry=<?php echo $birthday->id; ?>"><i class="fa fa-trash"></i> Delete</a></td>
-							</tr>
-							<?php } ?>
 						</tbody>
 					</table>
 				</div>
@@ -55,7 +47,7 @@
 						<p>Hi there! This system has been developed as part of a Coding Challenge by FLG. Hope you like it!</p>
 						<hr />
 						<h3>Add a birthday</h3>
-						<form action="debug.php" method="post">
+						<form action="process" method="post">
 							<label for="user_name">What's the name</label>
 							<input type="text" name="user_name" id="user_name" class="form-control" required="require" autofocus="autofocus" onkeyup="adaptName();" />
 							<br />
@@ -71,8 +63,18 @@
 		<?php include(APP_ROOT . "/includes/corejs.php"); ?>
 		<script>
 			$(function () {
-				$('[data-toggle="tooltip"]').tooltip()
-			})
+				$.ajax({ 
+					type	:	"GET",
+					url		:	"<?php echo API_ENDPOINT; ?>",
+					success:function(data) {
+						console.log(data);
+						let birthdayTable	=	$( "#birthdayTable tbody" );
+						$.each(data, function(index, element){
+							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td>" + element.time_until + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
+						})
+					}
+				})
+			});
 			function adaptName() {
 				if ($( "#user_name").val() == "" ) {
 					$( "#users_name_for_js" ).html("their");
