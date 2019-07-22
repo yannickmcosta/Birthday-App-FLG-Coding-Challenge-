@@ -83,5 +83,37 @@
 				}
 			}
 		</script>
+		<?php if (isset($_GET['created'])) { ?>
+		<script>
+			Swal.fire('Created', 'Record added successfully!', 'success');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
+		<?php if (isset($_GET['notCreated'])) { ?>
+		<script>
+			Swal.fire('Error on creation', 'That record didn\'t get added, check the logs.', 'error');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
+		
+		<?php if (isset($_GET['removed'])) { ?>
+		<script>
+			Swal.fire('Removed', 'Record successfully removed!', 'success');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
+		<?php if (isset($_GET['notRemoved'])) { ?>
+		<script>
+			Swal.fire('Error on removal', 'That record didn\'t get removed, check the logs.', 'error');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
+		
+		<?php if (isset($_GET['badRequest'])) { ?>
+		<script>
+			Swal.fire('Bad Request', 'The request you made was bad, or didn\'t have everything needed, please try again.', 'warning');
+			window.history.replaceState({}, document.title, "/");
+		</script>
+		<?php } ?>
 	</body>
 </html>
