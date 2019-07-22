@@ -13,6 +13,14 @@
 				throw $e;
 			}
 		}
+
+		// Date validation function, taken from PHP.net
+		// https://www.php.net/manual/en/function.checkdate.php#113205
+
+		private function validateDate($date, $format = 'Y-m-d H:i:s') {
+			$dateTime = DateTime::createFromFormat($format, $date);
+			return $dateTime && $dateTime->format($format) == $date;
+		}
 		
 		/*
 			api::get
@@ -117,6 +125,14 @@
 				
 				$postData['user_name']	=	preg_replace('/[^A-Za-z0-9\ \-\.\']/','',$postData['user_name']);
 				$postData['user_dob']	=	preg_replace('/[^0-9\-\/]/','',$postData['user_dob']);
+				
+				if (!$this->validateDate($postData['user_dob'], "Y-m-d")) {
+					$this->error	=	[
+						"error_description"	=>	"An invalid datestring was supplied",
+						"error_code"		=>	"POST_DATA_BAD_DATE_PROVIDED"
+					];
+					throw new Exception ("Bad Request", 400);
+				}
 				
 				$postData['user_dob']	=	date("Y-m-d", strtotime($postData['user_dob']));
 				
