@@ -28,3 +28,4 @@
 	*/
 	define("APP_ROOT", "/var/www/flg-birthday.mccabecosta.com");
 	define("DOMAIN_URI_ROOT", "https://flg-birthday.mccabecosta.com");
+	define("API_ENDPOINT", "https://flg-birthday.mccabecosta.com/api");
