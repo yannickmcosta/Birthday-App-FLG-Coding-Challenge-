@@ -24,7 +24,7 @@
 			try {
 				// Check first to see if these have been set to empty by the calling script,
 				// and then change them back to the defaults if so
-				if (empty($records) || !isset($records)) {
+				if (empty($limit) || !isset($offset)) {
 					$limit	=	100;
 					$offset	=	0;
 				} else {
@@ -46,14 +46,14 @@
 						];
 						throw new Exception ("Bad Request", 400);
 					}
-					
-					// Do some final bits of sanitisation to the numbers to ensure they aren't floats
-					$limit	=	filter_var($limit, FILTER_SANITIZE_NUMBER_INT);
-					$offset	=	filter_var($offset, FILTER_SANITIZE_NUMBER_INT);
 				}
 				
+				// Do some final bits of sanitisation to the numbers to ensure they aren't floats
+				$limit	=	filter_var($limit, FILTER_SANITIZE_NUMBER_INT);
+				$offset	=	filter_var($offset, FILTER_SANITIZE_NUMBER_INT);
+				
 				// Request the data from the SQL database, using the defined limits and offsets
-				$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public` FROM `birthdays` LIMIT ?, ?", $limit, $offset);
+				$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public` FROM `birthdays` LIMIT ?, ?", $offset, $limit);
 				
 				// If there are no results, this function will return FALSE, and the API
 				// will subsequently return an HTTP/2 204 No Content based on this
@@ -142,6 +142,57 @@
 					$this->error	=	[
 						"error_description"	=>	"Unable to insert row into database.",
 						"error_code"		=>	"DB_AFFECTED_ROWS_NOT_GT1"
+					];
+					throw new Exception ("Internal Server Error", 500);
+				} else {
+					// As all has gone well, return TRUE
+					return TRUE;
+				}
+				
+			} catch (Exception $e) {
+				throw $e;
+			}
+		}
+		
+		public function remove($entry_id) {
+			try {
+				if (!isset($entry_id)) {
+					// The entry_id variable should be set in order to call this function
+					// and in order for the function to operate. If it's not set, tell the
+					// user about it
+					$this->error	=	[
+						"error_description"	=>	"No Entry ID value provided",
+						"error_code"		=>	"ENTRY_ID_MISSING"
+					];
+					throw new Exception ("Bad Request", 400);
+				}
+				
+				if (!is_numeric($entry_id)) {
+					// The entry_id variable should always be numeric as it refers to the
+					// auto_increment value of the record in the database. In a perfect world,
+					// this would be a UUID, as to prevent a user iterating through your API
+					// and ruining your day. Something that would be done as an advancement of course
+					$this->error	=	[
+						"error_description"	=>	"Provided Entry ID is not valid",
+						"error_code"		=>	"ENTRY_ID_NON_NUMERIC"
+					];
+					throw new Exception ("Bad Request", 400);
+				}
+				
+				// Little bit of sanitisation to make sure the entry_id variable is an int
+				$entry_id	=	filter_var($entry_id, FILTER_SANITIZE_NUMBER_INT);
+				
+				// Run the SQL to delete the record, LIMITing the amount it can do by 1, just for sanity's sake
+				$result	=	$this->dbHandler->query("DELETE FROM `birthdays` WHERE `id` = ? LIMIT 1", $entry_id);
+				
+				if (!$result['affectedRows'] >= 1) {
+					// Check to see that more than 1 row was affected in the database, if this is
+					// not the case, then the SQL didn't execute sucessfully, and this will need
+					// to be relayed back to the user. As we've set a LIMIT 1 (I don't trust deletes!)
+					// this should be the case when this query executes sucessfully.
+					$this->error	=	[
+						"error_description"	=>	"Unable to delete row from database.",
+						"error_code"		=>	"DB_AFFECTED_ROWS_NOT_DEL1"
 					];
 					throw new Exception ("Internal Server Error", 500);
 				} else {

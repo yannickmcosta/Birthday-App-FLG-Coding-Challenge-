@@ -10,6 +10,7 @@
 	//define("DB_HOST", "127.0.0.1");
 	
 	// Database Username
+	// This user has SELECT, INSERT, UPDATE, DELETE permissions
 	define("DB_USER", "flg-bithday-user");
 	
 	// Database Password
