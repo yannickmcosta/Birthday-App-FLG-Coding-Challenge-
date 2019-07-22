@@ -9,8 +9,19 @@
 			$api	=	new api();
 			$limit	=	(isset($_GET['limit']) ? $_GET['limit'] : 100);
 			$offset	=	(isset($_GET['offset']) ? $_GET['offset'] : 0);
+			if (isset($_GET['today'])) {
+				if ($_GET['today'] == "true") {
+					$today = TRUE;
+				} else if ($_GET['today'] == "false") {
+					$today = FALSE;
+				} else {
+					$today = NULL;
+				}
+			} else {
+				$today = NULL;
+			}
 			
-			if ($api->get($limit, $offset)) {
+			if ($api->get($limit, $offset, $today)) {
 				header("HTTP/2 200 OK");
 				header("Content-type: application/json");
 				echo $api->data;

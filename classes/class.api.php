@@ -83,11 +83,11 @@
 				} else if ($today === FALSE) {
 					// If not, get everyone who isn't today
 					// Request the data from the SQL database, using the defined limits and offsets
-					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP)LIMIT ?, ?", $offset, $limit);
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP) LIMIT ?, ?", $offset, $limit);
 				} else {
 					// If not, get everyone
 					// Request the data from the SQL database, using the defined limits and offsets
-					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays` WHERE MONTH(user_dob) != MONTH(CURRENT_TIMESTAMP) AND DAY(user_dob) != DAY(CURRENT_TIMESTAMP)LIMIT ?, ?", $offset, $limit);
+					$results	=	$this->dbHandler->query("SELECT `id`, `user_name`, `user_dob`, `added`, `is_public`, TIMESTAMPDIFF(YEAR,`user_dob`,CURDATE()) AS `age` FROM `birthdays`  LIMIT ?, ?", $offset, $limit);
 				}
 				
 				// If there are no results, this function will return FALSE, and the API
