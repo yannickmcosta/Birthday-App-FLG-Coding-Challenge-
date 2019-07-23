@@ -5,6 +5,13 @@
 		public	$error		=	NULL;
 		public	$data		=	NULL;
 		
+		/*
+			api:__construct
+				Creates a database resource
+			
+			returns void
+		*/
+		
 		public function __construct() {
 			try {
 				// Instatiate a database connection when the class is constructed
@@ -22,25 +29,54 @@
 			return $dateTime && $dateTime->format($format) == $date;
 		}
 		
+		/*
+			api::betweenDates
+				Compares two dates and returns a string defining the time between the two dates
+				
+			- date1		(required) (string)	=	Defines date 1, can be most accepted date formats
+			- date2		(required) (string)	=	Defines date 1, can be most accepted date formats
+			- format	(optional) (string)	=	DateTime compatible formatting string
+			
+			returns string
+		*/
+		
 		public static function betweenDates($date1, $date2, $format = "%m months, %d days") {
+			// Strip the dates of their years to do comparisons based on just the dates
+			// otherwise we'll get dates that are years ago
 			$date1	=	date("jS F", strtotime($date1));
 			$date2	=	date("jS F", strtotime($date2));
 			
 			if ($date1 == $date2) {
+				// If the date is today, give them cake
 				return "Happy Birthday! 🎂";
 			} else {
+				// Convert the dates to DateTime objects
 				$date1 = new DateTime($date1);
 				$date2 = new DateTime($date2);
 				
+				if ($date1 < $date2) {
+					// Check if the date is in the past, if so, add a year
+					$date1->add(new DateInterval('P1Y'));
+				}
+				
+				// Get the difference between the two dates
 				$interval = $date2->diff($date1);
+				
+				// Return the date in the requested format
 				return $interval->format($format);
 			}
 		}
 		
 		/*
 			api::get
+				Gets birthday data from the database
+			
 			- limit		(optional) (int)	=	Defines the limit to the number of records to retrieve
 			- offset	(optional) (int)	=	Defines the offset record number to start on
+			
+			sets $this->data object
+			
+			returns bool
 		*/
 		
 		public function get($limit = 100, $offset = 0, $today = NULL) {
@@ -123,6 +159,15 @@
 			}
 		}
 		
+		/*
+			api::set
+				Adds a birthday entry to the database
+			
+			- postData	(required) (array)	=	An array consisting of the data to set, requires user_name and user_dob
+			
+			returns bool
+		*/
+		
 		public function set($postData) {
 			try {
 				if (!is_array($postData)) {
@@ -200,6 +245,15 @@
 				throw $e;
 			}
 		}
+		
+		/*
+			api::remove
+				Removes birthday data from the database
+			
+			- entry_id		(required) (int)	=	An integer relating to the record which is to be removed
+			
+			returns bool
+		*/
 		
 		public function remove($entry_id) {
 			try {
