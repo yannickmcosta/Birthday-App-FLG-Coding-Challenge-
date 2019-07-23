@@ -13,16 +13,19 @@ There are 3 request endpoints that have been programmed for this API:
 #### /api with no variables
 
 HTTP Status Code: 200 OK
+
 This will return an JSON object with all birthdays in the database.
 
 #### /api?today=true
 
 HTTP Status Code: 200 OK
+
 This will return a JSON object with birthdays that are today
 
 #### /api?today=false
 
 HTTP Status Code: 200 OK
+
 This will return a JSON object with birthdays that are not today
 
 ## POST /api
@@ -30,8 +33,8 @@ This will return a JSON object with birthdays that are not today
 ### Expected variables
 Will return HTTP Status Code 400 Bad Request if not supplied
 
-**user_name** - (string) The user's name
-**user_dob** - (string) The user's DOB, preferentially formatted in ISO 8601 format (1970-01-01)
+* **user_name** - (string) The user's name
+* **user_dob** - (string) The user's DOB, preferentially formatted in ISO 8601 format (1970-01-01)
 
 Will return HTTP Status Code 201 Created on Success
 
