@@ -35,7 +35,7 @@
 							<tr>
 								<th>User's Name</th>
 								<th>Users Date Of Birth</th>
-								<th class="d-none d-sm-block">How long until</th>
+								<th>Age</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -95,21 +95,21 @@
 			$(function () {
 				$.ajax({ 
 					type	:	"GET",
-					url		:	"<?php echo API_ENDPOINT; ?>?today=false",
+					url		:	"<?php echo API_ENDPOINT; ?>?today=true",
 					success:function(data) {
 						console.log(data);
-						let birthdayTable	=	$( "#birthdayTable tbody" );
+						let birthdayTable	=	$( "#todayBirthdayTable tbody" );
 						$.each(data, function(index, element){
-							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td class=\"d-none d-sm-block\">" + element.time_until + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
+							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td>" + element.age + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
 						})
 					}
 				});
 				$.ajax({ 
 					type	:	"GET",
-					url		:	"<?php echo API_ENDPOINT; ?>?today=true",
+					url		:	"<?php echo API_ENDPOINT; ?>?today=false",
 					success:function(data) {
 						console.log(data);
-						let birthdayTable	=	$( "#todayBirthdayTable tbody" );
+						let birthdayTable	=	$( "#birthdayTable tbody" );
 						$.each(data, function(index, element){
 							birthdayTable.append("<tr><td>" + element.user_name + "</td><td>" + element.user_dob_formatted + "</td><td class=\"d-none d-sm-block\">" + element.time_until + "</td><td><span class=\"delete-entry\"><a class=\"text-danger\" href=\"process?delete=" + element.id + "\"><i class=\"fa fa-trash\"></i> Delete</a></span></td>");
 						})
