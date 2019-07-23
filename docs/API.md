@@ -10,23 +10,11 @@ There are 3 request endpoints that have been programmed for this API:
 
 ### Request Variables
 
-#### /api with no variables
-
-HTTP Status Code: 200 OK
-
-This will return an JSON object with all birthdays in the database.
-
-#### /api?today=true
-
-HTTP Status Code: 200 OK
-
-This will return a JSON object with birthdays that are today
-
-#### /api?today=false
-
-HTTP Status Code: 200 OK
-
-This will return a JSON object with birthdays that are not today
+|Request         |Response            |Notes                                                            |
+|----------------|--------------------|-----------------------------------------------------------------|
+|/api            |200 OK - JSON Object|This will return a JSON object with all birthdays in the database|
+|/api?today=true |200 OK - JSON Object|This will return a JSON object with birthdays that are today     |
+|/api?today=false|200 OK - JSON Object|This will return a JSON object with birthdays that are not today |
 
 ## POST /api
 
