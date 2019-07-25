@@ -1,12 +1,15 @@
 <?php
 	class interactor {
 		public static function betweenDates($date1, $date2, $format = "%m months, %d days") {
+			// Remove the year from the date
 			$date1	=	date("jS F", strtotime($date1));
 			$date2	=	date("jS F", strtotime($date2));
 			
 			if ($date1 == $date2) {
+				// If the date is today, wish the user happy bithday
 				return "Happy Birthday! 🎂";
 			} else {
+				// If not, calculate the difference between the two dates
 				$date1 = new DateTime($date1);
 				$date2 = new DateTime($date2);
 				
@@ -18,14 +21,23 @@
 		public function get() {
 			try {
 
+				// Initialise curl
 				$curlRes = curl_init();
+				
+				// Set the API Endpoint
 				curl_setopt($curlRes, CURLOPT_URL, API_ENDPOINT);
+				
+				// Set the request method
 				curl_setopt($curlRes, CURLOPT_CUSTOMREQUEST, 'GET');
+				
+				// Return the raw response
 				curl_setopt($curlRes, CURLOPT_RETURNTRANSFER, 1);
 
+				// Execute the curl request and assign it to $response
 				$response = curl_exec($curlRes);
 				
 				if (!$response) {
+					// If the response isn't set, throw an error
 					error_log("Interactor Error Occurred (GET): Code: " . curl_errno($curlRes) . " Error: " . curl_error($curlRes));
 					curl_close($curlRes);
 					throw new Exception ("Error occurred retrieving data from API, please check the logs", 500);
@@ -70,27 +82,39 @@
 					throw new Exception ("Bad Request", 400);
 				}
 				
+				// Initialise curl
 				$curlRes = curl_init();
+				
+				// Set the API Endpoint
 				curl_setopt($curlRes, CURLOPT_URL, API_ENDPOINT);
+				
+				// Set the request method
 				curl_setopt($curlRes, CURLOPT_CUSTOMREQUEST, 'POST');
+				
+				// Return the raw response
 				curl_setopt($curlRes, CURLOPT_RETURNTRANSFER, 1);
+				
+				// Set some HTTP Headers
 				curl_setopt($curlRes, CURLOPT_HTTPHEADER, [
 					'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
 				]);
 				
+				// Build the HTTP POST query from the post data and set the variables
 				$body = http_build_query($postData);
-				
 				curl_setopt($curlRes, CURLOPT_POST, 1);
 				curl_setopt($curlRes, CURLOPT_POSTFIELDS, $body);
 				
+				// Execute the curl request and assign the result to $response
 				$response = curl_exec($curlRes);
 				
-				
+				// Check the response code, if it's 201, that was a good request, then return true
 				$httpResponseCode	=	curl_getinfo($curlRes, CURLINFO_HTTP_CODE);
 				if ($httpResponseCode == 201) {
+					// Close the curl resource to free up resources
 					curl_close($curlRes);
 					return TRUE;
 				} else {
+					// Close the curl resource to free up resources
 					curl_close($curlRes);
 					return FALSE;
 				}
@@ -125,23 +149,37 @@
 				}
 				
 				
+				// Initialise curl
 				$curlRes = curl_init();
+				
+				// Set the API Endpoint
 				curl_setopt($curlRes, CURLOPT_URL, API_ENDPOINT);
+				
+				// Set the request method
 				curl_setopt($curlRes, CURLOPT_CUSTOMREQUEST, 'DELETE');
+				
+				// Return the raw response
 				curl_setopt($curlRes, CURLOPT_RETURNTRANSFER, 1);
+				
+				// Set some HTTP Headers
 				curl_setopt($curlRes, CURLOPT_HTTPHEADER, [
 					'Content-Type: application/x-www-form-urlencoded; charset=utf-8',
 				]);
 				
+				// Build the HTTP query from the post data and set the variables
 				$body = [
 					'entry_id' => $entry_id,
 				];
 				$body = http_build_query($body);
 				curl_setopt($curlRes, CURLOPT_POST, 1);
 				curl_setopt($curlRes, CURLOPT_POSTFIELDS, $body);
+				
+				// Execute the curl request and assign the response to $response
 				$response = curl_exec($curlRes);
 				
+				// If the API returned a 204, that was a good request
 				if (curl_getinfo($curlRes, CURLINFO_HTTP_CODE) == 204) {
+					// Close the curl resource to clean up
 					curl_close($curlRes);
 					return TRUE;
 				} else {

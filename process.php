@@ -1,4 +1,7 @@
 <?php
+	// Processor file, handles all requests and responses from the index page,
+	// Then redirects to the index page with a get variable set to help with error displays
+	
 	require(__DIR__ . "/config/config.php");
 	require(APP_ROOT . "/classes/class.interactor.php");
 	
